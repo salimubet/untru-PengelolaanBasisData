@@ -1,0 +1,42 @@
+Contoh Kasus pada the dream home 
+
+1. Tampilkan Jumlah Pegawai dan jumlah gaji tiap kantor cabang
+
+Cara 1
+SELECT branchNo, COUNT(staffNo) AS "count", SUM(salary) AS "sum" 
+	FROM Staff
+	GROUP BY branchNo
+	ORDER BY SUM(salary);
+
+
+
+Cara 2
+SELECT branch.branchNo, 
+	(
+		SELECT COUNT(staff.staffNo)
+	  	FROM staff
+		WHERE branch.branchNo=staff.branchNo), 
+       (
+		SELECT SUM(staff.salary) 
+		FROM staff
+		WHERE branch.branchNo=staff.branchNo  
+	)
+	FROM BRANCH
+	WHERE (SELECT COUNT(staff.staffNo) FROM staff WHERE branch.branchNo=staff.branchNo) >0
+	ORDER BY branch.branchNo DESC	
+
+
+2. Tampilkan staff yang bekerja di alamat "163 Main St"
+
+Cara 1
+SELECT staffNo, fName, lName, oPosition
+	FROM Staff, branch
+	WHERE Staff.branchNo=branch.branchNo and branch.street LIKE '163 Main St%';
+
+Cara 2
+SELECT staffNo, fName, lName, oPosition
+	FROM Staff
+	WHERE branchNo = 
+		       (SELECT branchNo
+		        FROM Branch
+		         WHERE street LIKE '163 Main St%') ;
